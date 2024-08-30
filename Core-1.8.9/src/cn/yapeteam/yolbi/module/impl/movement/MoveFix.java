@@ -2,7 +2,6 @@ package cn.yapeteam.yolbi.module.impl.movement;
 
 import cn.yapeteam.yolbi.event.Listener;
 import cn.yapeteam.yolbi.event.impl.player.EventMoveInput;
-import cn.yapeteam.yolbi.managers.RotationManager;
 import cn.yapeteam.yolbi.module.Module;
 import cn.yapeteam.yolbi.module.ModuleCategory;
 import cn.yapeteam.yolbi.utils.player.MoveUtil;
@@ -14,8 +13,8 @@ public class MoveFix extends Module {
 
     @Listener
     private void onMoveInput(EventMoveInput event) {
-        if (RotationManager.active && RotationManager.rotations != null) {
-            final float yaw = RotationManager.rotations.x;
+        if (rotationManager.active && rotationManager.rotations != null) {
+            final float yaw = rotationManager.rotations.x;
             MoveUtil.fixMovement(event, yaw);
         }
     }

@@ -8,6 +8,7 @@ import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.KeyBinding;
@@ -19,6 +20,8 @@ import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemFishingRod;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -47,6 +50,12 @@ public class PlayerUtil implements IMinecraft {
     private int getPing(Entity entity) {
         val uniqueID = mc.getNetHandler().getPlayerInfo(entity.getUniqueID());
         return uniqueID != null ? uniqueID.getResponseTime() : 0;
+    }
+
+    public static void sendMessage(String msg) {
+        if (mc.thePlayer != null) {
+            mc.thePlayer.addChatMessage(new ChatComponentText("\247b[Cloudy]\247r " + msg));
+        }
     }
 
     public static double fovFromEntity(Entity en) {
@@ -208,6 +217,18 @@ public class PlayerUtil implements IMinecraft {
         return getItem instanceof ItemSword || (settings.getAxe().getValue() && getItem instanceof ItemAxe) || (settings.getRod().getValue() && getItem instanceof ItemFishingRod) || (settings.getStick().getValue() && getItem == Items.stick);
     }
 
+    public static boolean overAir() {
+        return mc.theWorld.isAirBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ));
+    }
+
+    public static boolean onEdge() {
+        return onEdge(mc.thePlayer);
+    }
+
+    public static boolean onEdge(Entity entity) {
+        return mc.theWorld.getCollidingBoundingBoxes(entity, entity.getEntityBoundingBox().offset(entity.motionX / 3.0D, -1.0D, entity.motionZ / 3.0D)).isEmpty();
+    }
+
     /**
      * Finds what block or object the mouse is over at the specified partial tick time. Args: partialTickTime
      */
@@ -217,10 +238,8 @@ public class PlayerUtil implements IMinecraft {
 
         if (entity != null && mc.theWorld != null) {
             mc.mcProfiler.startSection("pick");
-            pointedEntity = null;
-            double blockReachDistance = Reach;
-            mc.objectMouseOver = entity.rayTrace(blockReachDistance, partialTicks);
-            double distance = blockReachDistance;
+            mc.objectMouseOver = entity.rayTrace(Reach, partialTicks);
+            double distance = Reach;
             final Vec3 vec3 = entity.getPositionEyes(partialTicks);
 
             if (mc.objectMouseOver != null) {
@@ -228,11 +247,10 @@ public class PlayerUtil implements IMinecraft {
             }
 
             final Vec3 vec31 = entity.getLook(partialTicks);
-            final Vec3 vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance);
-            pointedEntity = null;
+            final Vec3 vec32 = vec3.addVector(vec31.xCoord * Reach, vec31.yCoord * Reach, vec31.zCoord * Reach);
             Vec3 vec33 = null;
             final float f = 1.0F;
-            final List<Entity> list = mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance), Predicates.and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith));
+            final List<Entity> list = mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * Reach, vec31.yCoord * Reach, vec31.zCoord * Reach), Predicates.and(EntitySelectors.NOT_SPECTATING, Entity::canBeCollidedWith));
             double d2 = distance;
 
             for (final Entity entity1 : list) {
@@ -415,7 +433,7 @@ public class PlayerUtil implements IMinecraft {
 
 
     // This methods purpose is to get block placement possibilities, blocks are 1 unit thick so please don't change it to 0.5 it causes bugs.
-    public Vec3 getPlacePossibility(double offsetX, double offsetY, double offsetZ) {
+    public static @Nullable Vec3 getPlacePossibility(double offsetX, double offsetY, double offsetZ) {
         final List<Vec3> possibilities = new ArrayList<>();
         final int range = (int) (5 + (Math.abs(offsetX) + Math.abs(offsetZ)));
 
@@ -454,8 +472,19 @@ public class PlayerUtil implements IMinecraft {
         return possibilities.get(0);
     }
 
-    public Vec3 getPlacePossibility() {
+    public static Vec3 getPlacePossibility() {
         return getPlacePossibility(0, 0, 0);
+    }
+
+    public static boolean replaceable(BlockPos blockPos) {
+        if (mc.thePlayer == null || mc.theWorld == null) {
+            return false;
+        }
+        return block(blockPos).isReplaceable(mc.theWorld, blockPos);
+    }
+
+    public static boolean isFluid(@NotNull Block block) {
+        return block.getMaterial() == Material.lava || block.getMaterial() == Material.water;
     }
 
 }

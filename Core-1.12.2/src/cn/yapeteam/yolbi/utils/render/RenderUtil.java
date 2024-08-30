@@ -3,6 +3,7 @@ package cn.yapeteam.yolbi.utils.render;
 import cn.yapeteam.ymixin.utils.Mapper;
 import cn.yapeteam.yolbi.shader.GaussianFilter;
 import cn.yapeteam.yolbi.shader.impl.ShaderScissor;
+import cn.yapeteam.yolbi.utils.reflect.ReflectUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -873,5 +874,46 @@ public class RenderUtil {
             shadowCache.put(identifier, TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), blurred, true, false));
         }
         drawImage(shadowCache.get(identifier), x, y, width, height, color);
+    }
+
+    private static void drawESPImage(int texture, double x, double y, double x2, double y2, Color c, Color c2, Color c3, Color c4, float alpha) {
+        GlStateManager.bindTexture(texture);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(9, DefaultVertexFormats.POSITION_TEX_COLOR);
+        bufferbuilder.pos(x, y2, 1).tex(0.0, 1.0).color(c.getRed(), c.getGreen(), c.getBlue(), (int) (alpha * 255)).endVertex();
+        bufferbuilder.pos(x2, y2, 1).tex(1.0, 1.0).color(c2.getRed(), c2.getGreen(), c2.getBlue(), (int) (alpha * 255)).endVertex();
+        bufferbuilder.pos(x2, y, 1).tex(1.0, 0.0).color(c3.getRed(), c3.getGreen(), c3.getBlue(), (int) (alpha * 255)).endVertex();
+        bufferbuilder.pos(x, y, 1).tex(0.0, 0.0).color(c4.getRed(), c4.getGreen(), c4.getBlue(), (int) (alpha * 255)).endVertex();
+        GlStateManager.shadeModel(7425);
+        GlStateManager.depthMask(false);
+        tessellator.draw();
+        GlStateManager.depthMask(true);
+        GlStateManager.shadeModel(7424);
+    }
+
+    public static void renderESPImage(int texture, EntityLivingBase entity, float scale, float rotate, Color color, Color color2, Color color3, Color color4, float alpha, float partialTicks) {
+        RenderManager renderManager = mc.getRenderManager();
+        double x = interpolate(entity.posX, entity.prevPosX, partialTicks) - ReflectUtil.GetRenderManager$renderPosX(renderManager);
+        double y = interpolate(entity.posY, entity.prevPosY, partialTicks) - ReflectUtil.GetRenderManager$renderPosY(renderManager);
+        double z = interpolate(entity.posZ, entity.prevPosZ, partialTicks) - ReflectUtil.GetRenderManager$renderPosZ(renderManager);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x + 0.0F, (float) y + entity.height / 2f, (float) z);
+        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+        float f = 1.6F;
+        float f1 = 0.016666668F * f;
+        GlStateManager.scale(-f1, -f1, f1);
+        disableGlCap(GL_LIGHTING, GL_DEPTH_TEST, GL_ALPHA_TEST);
+        enableGlCap(GL_BLEND, GL_TEXTURE_2D);
+        GlStateManager.shadeModel(7425);
+        GL11.glRotated(rotate, 0.0, 0.0, 1.0);
+        float w = 50 * scale, h = 50 * scale;
+        drawESPImage(texture, -w / 2f, -h / 2f, w / 2f, h / 2f, color, color2, color3, color4, alpha * 0.7f);
+        GlStateManager.shadeModel(7424);
+        resetCaps();
+        glColor4f(1F, 1F, 1F, 1F);
+        GlStateManager.popMatrix();
     }
 }

@@ -10,7 +10,6 @@ import cn.yapeteam.yolbi.utils.player.PlayerUtil;
 import cn.yapeteam.yolbi.utils.reflect.ReflectUtil;
 import cn.yapeteam.yolbi.utils.vector.Vector2f;
 import cn.yapeteam.yolbi.utils.vector.Vector3d;
-import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -18,11 +17,11 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-@UtilityClass
+
 public class RotationManager implements IMinecraft {
-    public static boolean active;
-    public static Vector2f rotations, lastRotations, targetRotations, lastServerRotations;
-    private static double rotationSpeed;
+    public boolean active;
+    public Vector2f rotations, lastRotations, targetRotations, lastServerRotations;
+    private double rotationSpeed;
 
     public float renderPitchHead;
 
@@ -31,15 +30,15 @@ public class RotationManager implements IMinecraft {
     /*
      * This method must be called on Pre Update Event to work correctly
      */
-    public static void setRotations(final Vector2f rotations, final double rotationSpeed) {
-        RotationManager.targetRotations = rotations;
-        RotationManager.rotationSpeed = rotationSpeed * 18;
-        active = true;
+    public void setRotations(final Vector2f rotations, final double rotationSpeed) {
+        this.targetRotations = rotations;
+        this.rotationSpeed = rotationSpeed * 18;
+        this.active = true;
         smooth(rotations, targetRotations, rotationSpeed);
     }
 
     @Listener
-    public static void onPreUpdate(EventUpdate event) {
+    public void onPreUpdate(EventUpdate event) {
         if (!active || rotations == null || lastRotations == null || targetRotations == null || lastServerRotations == null) {
             rotations = lastRotations = targetRotations = lastServerRotations = new Vector2f(mc.player.rotationYaw, mc.player.rotationPitch);
         }
@@ -116,11 +115,11 @@ public class RotationManager implements IMinecraft {
         mc.player.rotationPitch = fixedRotations.y;
     }
 
-    public static void smooth() {
+    public void smooth() {
         smooth(lastRotations, targetRotations, rotationSpeed);
     }
 
-    public static void smooth(final Vector2f lastRotation, final Vector2f targetRotation, final double speed) {
+    public void smooth(final Vector2f lastRotation, final Vector2f targetRotation, final double speed) {
         float yaw = targetRotation.x;
         float pitch = targetRotation.y;
         final float lastYaw = lastRotation.x;
@@ -170,7 +169,7 @@ public class RotationManager implements IMinecraft {
     }
 
 
-    public static double[] getDistance(double x, double z, double y) {
+    public double[] getDistance(double x, double z, double y) {
         final double distance = MathHelper.sqrt(x * x + z * z), // @off
                 yaw = Math.atan2(z, x) * 180.0D / Math.PI - 90.0F,
                 pitch = -(Math.atan2(y, distance) * 180.0D / Math.PI); // @on
@@ -180,7 +179,7 @@ public class RotationManager implements IMinecraft {
                 (float) (pitch - mc.player.rotationPitch))};
     }
 
-    public static double[] getRotationsNeeded(Entity entity) {
+    public double[] getRotationsNeeded(Entity entity) {
         if (entity == null) return null;
 
         final EntityPlayerSP player = mc.player;
@@ -201,7 +200,7 @@ public class RotationManager implements IMinecraft {
         return new Vector2f(yaw, pitch);
     }
 
-    public static float clamp(final float n) {
+    public float clamp(final float n) {
         return MathHelper.clamp(n, -90.0f, 90.0f);
     }
 
@@ -261,7 +260,7 @@ public class RotationManager implements IMinecraft {
         return new Vector2f(yaw, pitch);
     }
 
-    public Vector2f resetRotation(final Vector2f rotation) {
+    public static Vector2f resetRotation(final Vector2f rotation) {
         if (rotation == null)
             return null;
         final float yaw = rotation.x + wrapAngleTo180(mc.player.rotationYaw - rotation.x);
@@ -269,12 +268,12 @@ public class RotationManager implements IMinecraft {
         return new Vector2f(yaw, pitch);
     }
 
-    public static void reset() {
+    public void reset() {
         setRotations(new Vector2f(mc.player.rotationYaw, mc.player.rotationPitch), 100);
         smooth();
     }
 
-    public static void stop() {
+    public void stop() {
         active = false;
         correctDisabledRotations();
     }

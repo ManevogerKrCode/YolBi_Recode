@@ -6,8 +6,7 @@ import cn.yapeteam.yolbi.module.Module;
 import cn.yapeteam.yolbi.ui.listedclickui.ImplScreen;
 import cn.yapeteam.yolbi.ui.listedclickui.component.AbstractComponent;
 import cn.yapeteam.yolbi.ui.listedclickui.component.Limitation;
-import cn.yapeteam.yolbi.utils.render.RenderUtil;
-import net.minecraft.util.EnumChatFormatting;
+import cn.yapeteam.yolbi.utils.render.GradientBlur;
 import org.lwjgl.input.Keyboard;
 
 /**
@@ -22,32 +21,21 @@ public class KeyBindingButton extends AbstractComponent {
         this.module = module;
     }
 
+    private final GradientBlur blur = new GradientBlur(GradientBlur.Type.TB);
+
+    @Override
+    public void update() {
+        blur.update(getX(), getY(), getWidth(), getHeight());
+    }
+
     @SuppressWarnings("DuplicatedCode")
     @Override
     public void drawComponent(int mouseX, int mouseY, float partialTicks, Limitation limitation) {
         AbstractFontRenderer font = YolBi.instance.getFontManager().getPingFang14();
-        RenderUtil.drawRect(getX(), getY(), getX() + getWidth(), getY() + getHeight(), ImplScreen.MainTheme[1].darker().getRGB());
-        int index = 0, all = 0;
-        for (AbstractComponent component : getParent().getParent().getChildComponents()) {
-            if (component instanceof ModuleButton) {
-                ModuleButton moduleButton = (ModuleButton) component;
-                boolean should = getParent().getParent().getChildComponents().indexOf(getParent()) > getParent().getParent().getChildComponents().indexOf(moduleButton);
-                all++;
-                if (should)
-                    index++;
-                if (moduleButton.isExtended())
-                    for (AbstractComponent childComponent : moduleButton.getChildComponents())
-                        if (childComponent instanceof ValueButton) {
-                            all++;
-                            if (should)
-                                index++;
-                            else if (moduleButton == getParent() && getParent().getChildComponents().indexOf(this) >= getParent().getChildComponents().indexOf(childComponent))
-                                index++;
-                        }
-            }
-        }
-        String text = keyBinding ? "Listening..." : EnumChatFormatting.WHITE + "Bind: " + EnumChatFormatting.RESET + Keyboard.getKeyName(module.getKey());
-        font.drawString(text, getX() + (getWidth() - font.getStringWidth(text)) / 2f, getY() + (getHeight() - font.getHeight()) / 2f + 1, ImplScreen.getComponentColor((all - 1 - index) * 100));
+        blur.render(getX(), getY(), getWidth(), getHeight(), partialTicks, 1);
+        // RenderUtil.drawRect(getX(), getY(), getX() + getWidth(), getY() + getHeight(), ImplScreen.MainTheme[1].darker().getRGB());
+        String text = keyBinding ? "Listening..." : "Bind: " + Keyboard.getKeyName(module.getKey());
+        font.drawString(text, getX() + (getWidth() - font.getStringWidth(text)) / 2f, getY() + (getHeight() - font.getStringHeight()) / 2f + 1, ImplScreen.getComponentColor((int) (getY() * 10)));
     }
 
     @Override

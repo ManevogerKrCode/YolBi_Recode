@@ -18,24 +18,19 @@
         <artifact name="ymixin.jar">
             <files>out/production/YMixin</files>
         </artifact>
-        <artifact name="injection-1.8.9.jar" proguard-config="injection-1.8.9.pro" shield-config="injection-1.8.9.json">
+        <artifact name="injection-1.8.9.jar" proguard-config="injection-1.8.9.pro">
             <files>out/production/Core-1.8.9</files>
             <files>out/production/VersionInfo</files>
         </artifact>
-        <artifact name="injection-1.12.2.jar" proguard-config="injection-1.12.2.pro"
-                  shield-config="injection-1.12.2.json">
+        <artifact name="injection-1.12.2.jar" proguard-config="injection-1.12.2.pro">
             <files>out/production/Core-1.12.2</files>
             <files>out/production/VersionInfo</files>
         </artifact>
-        <artifact name="injection-1.18.1.jar"
-                  proguard-config="injection-1.18.1.pro" shield-config="injection-1.18.1.json">
+        <artifact name="injection-1.18.1.jar" proguard-config="injection-1.18.1.pro">
             <files>out/production/Core-1.18.1</files>
             <files>out/production/VersionInfo</files>
         </artifact>
-        <native-obfuscate artifact="definer.jar"/>
-        <native-obfuscate artifact="hooker.jar"/>
-        <native-obfuscate artifact="loader.jar" black="cn.yapeteam.loader.ClassMapper"/>
-        <artifact name="injector.jar" launch4j-config="launch4j.xml">
+        <artifact name="injector.jar">
             <files>out/production/Injector</files>
             <files>out/production/VersionInfo</files>
             <dir>Injector/META-INF</dir>
@@ -53,8 +48,6 @@
                 </dir>
                 <dir name="dependencies">
                     <file>deps/shared/asm-all-9.2.jar</file>
-                    <file>deps/shared/commons-io.jar</file>
-                    <file>deps/shared/commons-imaging.jar</file>
                 </dir>
                 <files>build/natives</files>
                 <file>build/agent.jar</file>
@@ -67,11 +60,6 @@
                 <file platform="windows">Loader/dll/build/libagent.dll</file>
                 <file platform="mac">Loader/dll/build/libagent.dylib</file>
             </archive>
-        </artifact>
-        <artifact name="build.zip">
-            <file>build/injector.jar</file>
-            <file platform="windows">Loader/dll/build/libauth.dll</file>
-            <extract>resources/deps.zip</extract>
         </artifact>
     </build>
 </root>

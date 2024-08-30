@@ -5,6 +5,7 @@ import cn.yapeteam.loader.logger.Logger;
 import cn.yapeteam.yolbi.command.CommandManager;
 import cn.yapeteam.yolbi.config.ConfigManager;
 import cn.yapeteam.yolbi.event.EventManager;
+import cn.yapeteam.yolbi.event.impl.client.EventClientShutdown;
 import cn.yapeteam.yolbi.font.FontManager;
 import cn.yapeteam.yolbi.managers.BotManager;
 import cn.yapeteam.yolbi.managers.RotationManager;
@@ -39,6 +40,13 @@ public class YolBi {
     private BotManager botManager;
     private ExternalFrame jFrameRenderer;
     private TargetManager targetManager;
+    private RotationManager rotationManager;
+
+    public RotationManager getRotationManager() {
+        if (rotationManager == null)
+            rotationManager = new RotationManager();
+        return rotationManager;
+    }
 
     public EventManager getEventManager() {
         if (eventManager == null)
@@ -56,9 +64,10 @@ public class YolBi {
         if (initialized || instance == null) return;
         initialized = true;
         boolean ignored = YOLBI_DIR.mkdirs();
-        System.setProperty("sun.java2d.opengl", "true");
         if (instance.eventManager == null)
             instance.eventManager = new EventManager();
+        if (instance.rotationManager == null)
+            instance.rotationManager = new RotationManager();
         instance.commandManager = new CommandManager();
         instance.configManager = new ConfigManager();
         instance.moduleManager = new ModuleManager();
@@ -70,9 +79,9 @@ public class YolBi {
         instance.eventManager.register(instance.moduleManager);
         instance.eventManager.register(instance.botManager);
         instance.eventManager.register(instance.targetManager);
+        instance.eventManager.register(instance.rotationManager);
         instance.eventManager.register(Shader.class);
         instance.eventManager.register(ESPUtil.class);
-        instance.eventManager.register(RotationManager.class);
         instance.moduleManager.load();
         try {
             instance.getConfigManager().load();
@@ -93,6 +102,7 @@ public class YolBi {
     public void shutdown() {
         try {
             Logger.info("Shutting down Yolbi Lite");
+            eventManager.post(new EventClientShutdown());
             instance.jFrameRenderer.close();
             configManager.save();
             WebServer.stop();

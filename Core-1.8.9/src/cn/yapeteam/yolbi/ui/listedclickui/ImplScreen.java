@@ -151,6 +151,7 @@ public class ImplScreen extends GuiScreen {
                 ReflectionManager.SetEntityRenderer$theShaderGroup(mc.entityRenderer, null);
             }
         }
+        guiModuleInstance.setEnabled(false);
         try {
             YolBi.instance.getConfigManager().save();
         } catch (IOException e) {

@@ -7,11 +7,15 @@ import cn.yapeteam.yolbi.module.values.Value;
 import cn.yapeteam.yolbi.ui.listedclickui.ImplScreen;
 import cn.yapeteam.yolbi.ui.listedclickui.component.AbstractComponent;
 import cn.yapeteam.yolbi.ui.listedclickui.component.Limitation;
+import cn.yapeteam.yolbi.utils.animation.Animation;
+import cn.yapeteam.yolbi.utils.animation.Easing;
+import cn.yapeteam.yolbi.utils.render.GradientBlur;
 import cn.yapeteam.yolbi.utils.render.RenderUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.renderer.GlStateManager;
 
+import java.awt.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +34,11 @@ public class ModuleButton extends AbstractComponent {
 
     private boolean extended = false;
     private float extend = 0;
+    private final Animation extendAnimation = new Animation(Easing.EASE_OUT_EXPO, 400);
+
+    public float getExtend() {
+        return (float) extendAnimation.animate(extend);
+    }
 
     @Override
     public void init() {
@@ -66,43 +75,34 @@ public class ModuleButton extends AbstractComponent {
             if (extended && !(component instanceof ValueButton && !((ValueButton) component).getValue().getVisibility().get()))
                 extend += component.getHeight() + ImplScreen.valueSpacing;
         }
+        blur.update(getX(), getY(), getWidth(), getHeight());
         super.update();
     }
+
+    private final GradientBlur blur = new GradientBlur(GradientBlur.Type.TB);
+    private final Animation alphaAnimation = new Animation(Easing.EASE_OUT_QUAD, 200);
 
     @Override
     public void drawComponent(int mouseX, int mouseY, float partialTicks, Limitation limitation) {
         if (!(
                 getX() + getWidth() < limitation.getX() ||
-                getX() > limitation.getX() + limitation.getWidth() ||
-                getY() + getHeight() < limitation.getY() ||
-                getY() > limitation.getY() + limitation.getHeight()
+                        getX() > limitation.getX() + limitation.getWidth() ||
+                        getY() + getHeight() < limitation.getY() ||
+                        getY() > limitation.getY() + limitation.getHeight()
         )) {
-            int index = 0, all = 0;
-            for (AbstractComponent component : getParent().getChildComponents())
-                if (component instanceof ModuleButton) {
-                    ModuleButton moduleButton = (ModuleButton) component;
-                    if (getParent().getChildComponents().indexOf(this) > getParent().getChildComponents().indexOf(moduleButton)) {
-                        index++;
-                        if (moduleButton.isExtended()) {
-                            for (AbstractComponent childComponent : moduleButton.getChildComponents())
-                                if (!(childComponent instanceof ValueButton && !((ValueButton) childComponent).getValue().getVisibility().get()))
-                                    index++;
-                        }
-                    }
-                    if (moduleButton.isExtended())
-                        all += moduleButton.getChildComponents().size();
-                    all++;
-                }
             GlStateManager.color(1, 1, 1, 1);
-            RenderUtil.drawRect(getX(), getY(), getX() + getWidth(), getY() + getHeight(), module.isEnabled() ? (ImplScreen.getComponentColor((all - 1 - index) * 100)) : (isHovering(mouseX, mouseY) && getParent().isHovering(mouseX, mouseY) ? ImplScreen.MainTheme[0].getRGB() : ImplScreen.MainTheme[1].getRGB()));
+            blur.render(getX(), getY(), getWidth(), getHeight(), partialTicks, 1);
+            int color = ImplScreen.getComponentColor((int) (getY() * 10));
+            boolean hovering = isHovering(mouseX, mouseY) && getParent().isHovering(mouseX, mouseY);
+            RenderUtil.drawRect(getX(), getY(), getX() + getWidth(), getY() + getHeight(), new Color(0, 0, 0, (float) alphaAnimation.animate(hovering ? 0.4 : 0.1)).getRGB());
             AbstractFontRenderer font = YolBi.instance.getFontManager().getPingFang14();
-            font.drawString(module.getName(), getX() + 5, getY() + (getHeight() - font.getStringHeight(module.getName())) / 2f + 1, !ImplScreen.getClientThemeModuleInstance().color.is("Vape") && module.isEnabled() ? ImplScreen.MainTheme[4].getRGB() : -1);
+            font.drawString(module.getName(), getX() + 5, getY() + (getHeight() - font.getStringHeight(module.getName())) / 2f, module.isEnabled() ? color : -1);
             if (getChildComponents().size() > 1) {
                 float x = getX() + getWidth() - 6;
                 float top_bottom = 6.5f;
                 float y = getY() + top_bottom;
                 for (int i = 0; i < 3; i++) {
-                    RenderUtil.circle(x, y, 0.09f, !ImplScreen.getClientThemeModuleInstance().color.is("Vape") && module.isEnabled() ? ImplScreen.MainTheme[4].getRGB() : -1);
+                    RenderUtil.circle(x, y, 0.09f, -1);
                     y += (getHeight() - top_bottom * 2) / 2f;
                 }
             }

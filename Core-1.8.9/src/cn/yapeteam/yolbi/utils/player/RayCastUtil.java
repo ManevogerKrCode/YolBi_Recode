@@ -1,16 +1,20 @@
 package cn.yapeteam.yolbi.utils.player;
 
 
+import cn.yapeteam.loader.logger.Logger;
+import cn.yapeteam.ymixin.utils.Mapper;
 import cn.yapeteam.yolbi.managers.ReflectionManager;
 import cn.yapeteam.yolbi.utils.IMinecraft;
 import cn.yapeteam.yolbi.utils.vector.Vector2f;
 import com.google.common.base.Predicates;
+import kotlin.Triple;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * @author Patrick
@@ -18,7 +22,7 @@ import java.util.Objects;
  */
 public final class RayCastUtil implements IMinecraft {
 
-    private static final Frustum FRUSTUM = new Frustum();
+    private static Frustum FRUSTUM;
 
     public static MovingObjectPosition rayCast(final Vector2f rotation, final double range) {
         return rayCast(rotation, range, 0);
@@ -124,8 +128,72 @@ public final class RayCastUtil implements IMinecraft {
     }
 
     private static boolean isInViewFrustrum(final AxisAlignedBB bb) {
+        if (FRUSTUM == null) FRUSTUM = new Frustum();//由于客户端初始化在非主线程进行，所以clinit中无法调用GL方法
         final Entity current = mc.getRenderViewEntity();
         FRUSTUM.setPosition(current.posX, current.posY, current.posZ);
         return FRUSTUM.isBoundingBoxInFrustum(bb);
+    }
+
+    private static Field EnumFacing$VALUES;
+
+    static {
+        try {
+            EnumFacing$VALUES = EnumFacing.class.getDeclaredField(Mapper.map("net/minecraft/util/EnumFacing", "VALUES", null, Mapper.Type.Field));
+            EnumFacing$VALUES.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            Logger.exception(e);
+        }
+    }
+
+    private static EnumFacing[] EnumFacing$VALUES() {
+        try {
+            return (EnumFacing[]) EnumFacing$VALUES.get(null);
+        } catch (IllegalAccessException e) {
+            return new EnumFacing[0];
+        }
+    }
+
+    private static final Set<EnumFacing> FACINGS = new HashSet<>(Arrays.asList(EnumFacing$VALUES()));
+
+    public static @NotNull Optional<Triple<BlockPos, EnumFacing, Vec3>> getPlaceSide(@NotNull BlockPos blockPos) {
+        return getPlaceSide(blockPos, FACINGS);
+    }
+
+    public static @NotNull Optional<Triple<BlockPos, EnumFacing, Vec3>> getPlaceSide(@NotNull BlockPos blockPos, Set<EnumFacing> limitFacing) {
+        final List<BlockPos> possible = Arrays.asList(
+                blockPos.down(), blockPos.east(), blockPos.west(),
+                blockPos.north(), blockPos.south(), blockPos.up()
+        );
+
+        for (BlockPos pos : possible) {
+            if (!PlayerUtil.replaceable(pos)) {
+                EnumFacing facing;
+                Vec3 hitPos;
+                if (pos.getY() < blockPos.getY()) {
+                    facing = EnumFacing.UP;
+                    hitPos = new Vec3(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
+                } else if (pos.getX() > blockPos.getX()) {
+                    facing = EnumFacing.WEST;
+                    hitPos = new Vec3(pos.getX(), pos.getY() + 0.5, pos.getZ() + 0.5);
+                } else if (pos.getX() < blockPos.getX()) {
+                    facing = EnumFacing.EAST;
+                    hitPos = new Vec3(pos.getX() + 1, pos.getY() + 0.5, pos.getZ() + 0.5);
+                } else if (pos.getZ() < blockPos.getZ()) {
+                    facing = EnumFacing.SOUTH;
+                    hitPos = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 1);
+                } else if (pos.getZ() > blockPos.getZ()) {
+                    facing = EnumFacing.NORTH;
+                    hitPos = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ());
+                } else {
+                    facing = EnumFacing.DOWN;
+                    hitPos = new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                }
+
+                if (!limitFacing.contains(facing)) continue;
+
+                return Optional.of(new Triple<>(pos, facing, hitPos));
+            }
+        }
+        return Optional.empty();
     }
 }

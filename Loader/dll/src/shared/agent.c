@@ -4,15 +4,13 @@
 #include <wchar.h>
 #include <locale.h>
 
-
 #if __APPLE__
-    #include "../jvm/darwin/jni.h"
-    #include "../jvm/darwin/jvmti.h"
+#include "../jvm/darwin/jni.h"
+#include "../jvm/darwin/jvmti.h"
 #elif _WIN64
-    #include "../jvm/windows/jni.h"
-    #include "../jvm/windows/jvmti.h"
+#include "../jvm/windows/jni.h"
+#include "../jvm/windows/jvmti.h"
 #endif
-
 
 #include "main.c"
 #include "agent.h"
@@ -36,5 +34,5 @@ JNIEXPORT void JNICALL Java_cn_yapeteam_agent_Agent_loadNative(JNIEnv *env, jcla
     memset(dst, 0, (jstr_len + 1) * sizeof(wchar_t));
     js2w(env, userDir, dst);
     yolbiPath = format_wchar(L"%ls\\.yolbi", dst);
-    Inject_fla_bcf_(env, jvmti);
+    Inject(env, jvmti);
 }
