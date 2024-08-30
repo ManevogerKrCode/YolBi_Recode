@@ -9,7 +9,7 @@
 -dontoptimize
 -printmapping build/injection-1.18.1.mapping
 -obfuscationdictionary dictionaries/keywords.txt
--classobfuscationdictionary dictionaries/glitchy.txt
+-classobfuscationdictionary dictionaries/IiIIiiiIIIiIiI.txt
 -packageobfuscationdictionary dictionaries/yolbi.txt
 -overloadaggressively
 -dontusemixedcaseclassnames
@@ -27,11 +27,6 @@
 }
 
 -keep,allowshrinking class cn.yapeteam.yolbi.mixin.** {
-    <fields>;
-    <methods>;
-}
-
--keep,allowshrinking class cn.yapeteam.yolbi.mixin.transformer.** {
     <fields>;
     <methods>;
 }

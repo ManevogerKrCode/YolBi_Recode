@@ -39,7 +39,5 @@ public class MixinGameRenderer {
             @Local(source = "partialTicks", index = 1) float partialTicks
     ) {
         YolBi.instance.getEventManager().post(new EventRender3D(poseStack, partialTicks));
-        System.out.println(poseStack);
-        System.out.println(partialTicks);
     }
 }
