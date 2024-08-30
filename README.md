@@ -1,17 +1,27 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
-  <img src="https://avatars.githubusercontent.com/u/159465859?s=64&v=4" alt="YolBi Inject" img>
+  <img src="https://avatars.githubusercontent.com/u/159465859?s=64&v=4" alt="YolBi Lite" img>
 </p>
 
-# YolBi Inject - Recode
+为支持Minecraft开源社区 ~~(打死妖猫的圈钱梦想)~~ ，我决定开放YolBi Lite Legacy分支，包括布吉岛特征绕过在内
 
-- ***Powered by Yape Development Team***
+此仓库将长期维护，欢迎各位加入开发
+
+# YolBi Lite Legacy
+
+***Powered by Yape Development Team***
+
+使用YolBi Lite Legacy的源代码，你必须遵守位于仓库根目录下的`YOLBI LICENSE.md`
 
 # Join Us
 
-Discord: https://discord.gg/7SyrPcreJw
-
 QQ Group: 699481681
+
+## TODO List
+
+- [ ] 1.18.1 bypass for `布吉岛`
+- [ ] 更加美丽的视觉
+- [ ] 注入器重构
 
 ## Development
 
@@ -42,10 +52,3 @@ Run `RELEASE BUILD`
 For custom build, please edit `YBuild.xml`
 
 <hr>
-
-## TODO
-
-- [ ] Legit TellyBridge
-- [ ] Legit KillAura
-- [ ] Legit AimAssist
-- [ ] Modifier
