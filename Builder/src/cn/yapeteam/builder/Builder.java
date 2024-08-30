@@ -1,6 +1,5 @@
 package cn.yapeteam.builder;
 
-import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,6 +11,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Permission;
@@ -212,32 +212,6 @@ public class Builder {
         outputFile.close();
     }
 
-    // advanced_mode:需要安装ollvm进行编译兼混淆
-    // 1.https://github.com/llvm/llvm-project/releases/tag/llvmorg-17.0.6
-    // 2.https://github.com/DreamSoule/ollvm17/releases/tag/17.0.6
-    // 3.https://winlibs.com/#download-release
-    // 4.安装LLVM-17.0.6-win64.exe后
-    // 5.将下载的ollvm的三个文件覆盖到LLVM/bin目录下
-    // 6.将LLVM/bin目录添加到环境变量PATH中
-    // 7.将下载的mingw覆盖到LLVM目录下
-    // <unknown-file>:0: syntax error 不用管
-
-    private static void generateHeaderFromClass(File clazz, File header, String field_name) throws IOException {
-        InputStream is = Files.newInputStream(clazz.toPath());
-        int value;
-        int size = 0;
-        StringBuilder string = new StringBuilder();
-        string.append(String.format("const unsigned char %s[] = {", field_name));
-        while ((value = is.read()) != -1) {
-            string.append(value).append(",");
-            size++;
-        }
-        string.append("};\n");
-        is.close();
-        string.append(String.format("const jsize %s_size = ", field_name)).append(size).append(";\n");
-        Files.write(header.toPath(), string.toString().getBytes());
-    }
-
     private static void buildDLL() throws Exception {
         deleteFileByStream("Loader/dll/build");
         File dir = new File("Loader/dll/build");
@@ -336,48 +310,11 @@ public class Builder {
         System.out.println("BUILD SUCCESS");
     }
 
-    @NotNull
-    private static String getNativeFileName() {
-        String osName = System.getProperty("os.name").toLowerCase();
-        String platform = System.getProperty("os.arch").toLowerCase();
-        String platformTypeName;
-        switch (platform) {
-            case "x86_64":
-            case "amd64":
-                platformTypeName = "x64";
-                break;
-            case "aarch64":
-                platformTypeName = "arm64";
-                break;
-            case "arm":
-                platformTypeName = "arm32";
-                break;
-            case "x86":
-                platformTypeName = "x86";
-                break;
-            default:
-                platformTypeName = "raw" + platform;
-        }
-
-        String osTypeName;
-        if (!osName.contains("nix") && !osName.contains("nux") && !osName.contains("aix")) {
-            if (osName.contains("win")) {
-                osTypeName = "windows.dll";
-            } else if (osName.contains("mac")) {
-                osTypeName = "macos.dylib";
-            } else {
-                osTypeName = "raw" + osName;
-            }
-        } else {
-            osTypeName = "linux.so";
-        }
-        return platformTypeName + "-" + osTypeName;
-    }
-
     public static void deleteFileByStream(String filePath) {
         Path path = Paths.get(filePath);
         try (Stream<Path> walk = Files.walk(path)) {
             walk.sorted(Comparator.reverseOrder()).forEach(Builder::deleteDirectoryStream);
+        } catch (NoSuchFileException ignored) {
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -386,6 +323,7 @@ public class Builder {
     private static void deleteDirectoryStream(Path path) {
         try {
             Files.delete(path);
+        } catch (NoSuchFileException ignored) {
         } catch (IOException e) {
             e.printStackTrace();
         }
