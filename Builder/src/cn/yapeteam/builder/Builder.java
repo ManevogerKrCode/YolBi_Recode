@@ -137,7 +137,7 @@ public class Builder {
                 ZipEntry entry = new ZipEntry(entry_name);
                 try {
                     output.putNextEntry(entry);
-                    output.write(readStream(Files.newInputStream(file.getAbsoluteFile().toPath())));
+                    output.write(readStream(Files.newInputStream(file.toPath())));
                     output.closeEntry();
                 } catch (IOException e) {
                     e.printStackTrace();
