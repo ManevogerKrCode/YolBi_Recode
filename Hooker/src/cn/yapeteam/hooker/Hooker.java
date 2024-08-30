@@ -31,9 +31,7 @@ public class Hooker {
 
     public static boolean shouldHook(String name) {
         return name.startsWith("cn.yapeteam.") ||
-                name.startsWith("org.objectweb.") ||
-                name.startsWith("io.github.humbleui.") ||
-                name.split("\\.")[0].endsWith("_yolbi");
+                name.startsWith("org.objectweb.");
     }
 
     private static byte[] readStream(InputStream inStream) throws Exception {
