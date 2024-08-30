@@ -57,6 +57,7 @@ public class Utils {
         ArrayList<Pair<String, Integer>> list = new ArrayList<>();
         list.addAll(getProcessesByClass("LWJGL"));
         list.addAll(getProcessesByClass("GLFW30"));
+        list.removeIf(p -> p.a.contains("GLFW message window"));
         return list;
     }
 
