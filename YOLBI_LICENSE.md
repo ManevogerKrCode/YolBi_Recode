@@ -12,4 +12,4 @@
 
 ## 此外，您还须遵守GPL3协议
 
-## 所有衍生代码及构建生成的二进制文件都必须包含此协议文件`YOLBI LICENSE.md`以及GPL3协议文件`GPL3 LICENSE.md`
+## 所有衍生代码及构建生成的二进制文件都必须包含此协议文件`YOLBI_LICENSE.md`以及GPL3协议文件`GPL3_LICENSE.md`

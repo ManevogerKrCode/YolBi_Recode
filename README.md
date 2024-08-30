@@ -11,7 +11,7 @@
 
 ***Powered by Yape Development Team***
 
-使用YolBi Lite Legacy的源代码，你必须遵守位于仓库根目录下的`YOLBI LICENSE.md`
+使用YolBi Lite Legacy的源代码，你必须遵守位于仓库根目录下的`YOLBI_LICENSE.md`
 
 # Join Us
 
