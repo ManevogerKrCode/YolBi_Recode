@@ -1,5 +1,5 @@
 -injars build/injection-1.12.2/injection-1.12.2.jar
--outjars build/injection-1.12.2/injection-1.12.2-o.jar
+-outjars build/injection-1.12.2/injection-1.12.2.jar-obf.jar
 
 -libraryjars minecraft-lib/minecraft-1.12.2.jar
 -libraryjars Builder/libs/rt.jar

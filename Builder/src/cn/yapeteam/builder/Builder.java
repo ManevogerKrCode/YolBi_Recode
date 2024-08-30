@@ -328,6 +328,7 @@ public class Builder {
                             ProGuard.main(new String[]{"@" + proguard_cfg.getNodeValue()});
                         } catch (ExitException ignored1) {
                         }
+                        copyStream(Files.newOutputStream(artifact_file.toPath()), Files.newInputStream(new File(build_dir, artifact_name + "-obf.jar").toPath()));
                     }
                 }
             }

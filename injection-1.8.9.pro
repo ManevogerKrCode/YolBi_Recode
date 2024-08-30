@@ -1,5 +1,5 @@
 -injars build/injection-1.8.9/injection-1.8.9.jar
--outjars build/injection-1.8.9/injection-1.8.9-o.jar
+-outjars build/injection-1.8.9/injection-1.8.9.jar-obf.jar
 
 -libraryjars minecraft-lib/minecraft-1.8.9.jar
 -libraryjars Builder/libs/rt.jar
