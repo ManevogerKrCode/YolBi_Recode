@@ -189,7 +189,6 @@ public class MainFrame extends JFrame {
     }
 
     public void inject(int pid) {
-        System.out.println(pid);
         inject_dll(pid);
         inject_ui();
     }
