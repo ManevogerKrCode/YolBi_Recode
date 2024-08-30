@@ -92,7 +92,6 @@ public class MainFrame extends JFrame {
                 Socket socket = serverSocket.accept();
                 new Thread(() -> {
                     try {
-                        SwingUtilities.invokeLater(() -> buttons.removeAll());
                         InputStream stream = socket.getInputStream();
                         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
                         while (true) {
@@ -218,5 +217,6 @@ public class MainFrame extends JFrame {
         if (updateThread.isAlive())
             updateThread.interrupt();
         serverThread.start();
+        buttons.removeAll();
     }
 }

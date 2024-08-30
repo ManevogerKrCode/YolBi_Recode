@@ -25,7 +25,7 @@ QQ Group: 699481681
 
 ## Development
 
-C compiler: MinGW-W64 x86_64-ucrt-posix-seh 11.2.0
+C compiler: MinGW-W64
 
 [MinGW](https://winlibs.com/#download-release)
 

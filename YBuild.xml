@@ -5,35 +5,53 @@
     <build>
         <artifact name="agent.jar">
             <files>out/production/Agent</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="definer.jar">
             <files>out/production/JarLoader</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="loader.jar">
             <files>out/production/Loader</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="hooker.jar">
             <files>out/production/Hooker</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="ymixin.jar">
             <files>out/production/YMixin</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="injection-1.8.9.jar" proguard-config="injection-1.8.9.pro">
             <files>out/production/Core-1.8.9</files>
             <files>out/production/VersionInfo</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="injection-1.12.2.jar" proguard-config="injection-1.12.2.pro">
             <files>out/production/Core-1.12.2</files>
             <files>out/production/VersionInfo</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="injection-1.18.1.jar" proguard-config="injection-1.18.1.pro">
             <files>out/production/Core-1.18.1</files>
             <files>out/production/VersionInfo</files>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
         </artifact>
         <artifact name="injector.jar">
             <files>out/production/Injector</files>
             <files>out/production/VersionInfo</files>
             <dir>Injector/META-INF</dir>
+            <file>YOLBI LICENCE.md</file>
+            <file>GPL3 LICENCE.md</file>
             <extract>deps/shared/jna.jar</extract>
             <extract>deps/shared/flatlaf.jar</extract>
             <extract>deps/shared/flatlaf-intellij-themes.jar</extract>
