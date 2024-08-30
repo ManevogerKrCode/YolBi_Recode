@@ -26,7 +26,7 @@
     public static void start();
 }
 
--keep,allowshrinking class cn.yapeteam.yolbi.mixin.injection.** {
+-keep,allowshrinking class cn.yapeteam.yolbi.mixin.** {
     <fields>;
     <methods>;
 }
